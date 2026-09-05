@@ -4,12 +4,12 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from tqdm import tqdm
 
-def enforce_mass(y_pred, y_true):
-    m_pred = y_pred.mean(dim=(1,2,3), keepdim=True)
-    m_true  = y_true.mean(dim=(1,2,3), keepdim=True)
-    return y_pred - m_pred + m_true
+def enforce_conservation(y_pred, y_true):
+    phi_bar_pred = y_pred.mean(dim=(1,2,3), keepdim=True)
+    phi_bar_true  = y_true.mean(dim=(1,2,3), keepdim=True)
+    return y_pred - phi_bar_pred + phi_bar_true
 
-def predict(model, X_t, n_rolls, enf_mass=True):
+def predict(model, X_t, n_rolls, enf_cons=True):
     model.eval()
     device = model.device
 
@@ -23,8 +23,8 @@ def predict(model, X_t, n_rolls, enf_mass=True):
         for _ in tqdm(range(n_rolls)):
             y_hat = model(X_t)
 
-            if enf_mass:
-                y_hat = enforce_mass(y_hat, X_t)
+            if enf_cons:
+                y_hat = enforce_conservation(y_hat, X_t)
             
             X_t = y_hat
             pred_trj.append(

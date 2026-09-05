@@ -4,8 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchmetrics import R2Score
-from losses import pignn_loss
-from utilities import enforce_mass
+from losses import conservation_loss
+from utilities import enforce_conservation
 
 # =====================================================
 # Periodic Convolution
@@ -221,12 +221,12 @@ class UNet(nn.Module):
 # Lightning Module
 # ---------------------------
 class LitUNet(pl.LightningModule):
-    def __init__(self, lr=1e-4, alpha=0, enf_mass=True, use_attn=False, dtype: torch.dtype = torch.float64):
+    def __init__(self, lr=1e-4, alpha=0, enf_cons=True, use_attn=False, dtype: torch.dtype = torch.float64):
         super().__init__()
         self.save_hyperparameters(ignore=['dtype'])
         self.hparams['dtype'] = 'float32' if dtype == torch.float32 else 'float64'
         self.alpha = alpha
-        self.enf_mass = bool(enf_mass)
+        self.enf_cons = bool(enf_cons)
         self.lr = lr
         self.use_attn = use_attn
         self.train_r2 = R2Score()
@@ -255,10 +255,10 @@ class LitUNet(pl.LightningModule):
 
         y_hat = self(x)
 
-        if self.enf_mass:
-            y_hat = enforce_mass(y_hat, x)
+        if self.enf_cons:
+            y_hat = enforce_conservation(y_hat, x)
 
-        loss = pignn_loss(y_hat, y, alpha=self.alpha)
+        loss = conservation_loss(y_hat, y, alpha=self.alpha)
 
         # flatten for metrics
         y_hat_flat = y_hat.view(y_hat.size(0), -1)
@@ -279,10 +279,10 @@ class LitUNet(pl.LightningModule):
 
         y_hat = self(x)
 
-        if self.enf_mass:
-            y_hat = enforce_mass(y_hat, x)
+        if self.enf_cons:
+            y_hat = enforce_conservation(y_hat, x)
 
-        loss = pignn_loss(y_hat, y, alpha=self.alpha)
+        loss = conservation_loss(y_hat, y, alpha=self.alpha)
 
         # flatten for metrics
         y_hat_flat = y_hat.view(y_hat.size(0), -1)

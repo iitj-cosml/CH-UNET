@@ -20,12 +20,12 @@ def str2bool(v):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--enf_mass", type=str2bool, default=True,
-                     help="Enforce mass conservation at prediction time, and select the "
+parser.add_argument("--enf_cons", type=str2bool, default=True,
+                     help="Enforce order-parameter conservation at prediction time, and select the "
                           "checkpoint trained with this same setting (default: True)")
 parser.add_argument("--log_dir", type=str, default="train_logs")
 parser.add_argument("--ckpt_path", type=str, default=None,
-                     help="Explicit checkpoint path; overrides the enf_mass-derived lookup")
+                     help="Explicit checkpoint path; overrides the enf_cons-derived lookup")
 parser.add_argument("--precision", type=str, default="double", choices=["single", "double"])
 parser.add_argument("--out_dir", type=str, default="results")
 args = parser.parse_args()
@@ -33,12 +33,12 @@ args = parser.parse_args()
 np.random.seed(42)
 
 n_ahead = 100
-enf_mass = args.enf_mass
+enf_cons = args.enf_cons
 
 if args.ckpt_path is not None:
     ckpt_path = args.ckpt_path
 else:
-    run_name = f"enf_mass_{str(enf_mass).lower()}"
+    run_name = f"enf_cons_{str(enf_cons).lower()}"
     ckpt_dir = os.path.join(args.log_dir, "lightning_logs", run_name, "checkpoints")
     ckpt_path = os.path.join(ckpt_dir, os.listdir(ckpt_dir)[-1])
 
@@ -85,7 +85,7 @@ for off in off_values:
         X_t = org_trjs[i, 0, ...]
         
         t3 = time()
-        pred_trjs.append(predict(model=model, X_t=X_t, n_rolls=pred_len, enf_mass=enf_mass))
+        pred_trjs.append(predict(model=model, X_t=X_t, n_rolls=pred_len, enf_cons=enf_cons))
         t4 = time()
         t_pred += (t4 - t3)
 
@@ -99,7 +99,7 @@ for off in off_values:
         dt=dt,
         n_ahead=n_ahead,
         off=off,
-        enf_mass=enf_mass,
+        enf_cons=enf_cons,
         ckpt_path=ckpt_path,
         seeds=seeds.tolist(),
         t_org=t_org,
@@ -108,6 +108,6 @@ for off in off_values:
     )
 
     os.makedirs(args.out_dir, exist_ok=True)
-    out_path = os.path.join(args.out_dir, f"result_{l}_{off}_enf_mass_{str(enf_mass).lower()}.npz")
+    out_path = os.path.join(args.out_dir, f"result_{l}_{off}_enf_cons_{str(enf_cons).lower()}.npz")
     np.savez(out_path, pred_trjs=pred_trjs, org_trjs=org_trjs, metadata=metadata)
     print(f"[pred.py] saved: {out_path}")

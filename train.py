@@ -19,8 +19,8 @@ def str2bool(v):
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--enf_mass", type=str2bool, default=True,
-                     help="Enforce mass conservation during training (default: True)")
+parser.add_argument("--enf_cons", type=str2bool, default=True,
+                     help="Enforce order-parameter conservation during training (default: True)")
 parser.add_argument("--seed", type=int, default=4276865)
 parser.add_argument("--lr", type=float, default=1e-4)
 parser.add_argument("--alpha", type=float, default=1.0)
@@ -43,14 +43,14 @@ if args.precision == "single":
 
 lr = args.lr
 alpha = args.alpha
-enf_mass = args.enf_mass
+enf_cons = args.enf_cons
 batch_size = args.batch_size
 epochs = args.epochs
 num_workers = args.num_workers
 log_dir = args.log_dir
 fname = args.fname
 
-run_name = f"enf_mass_{str(enf_mass).lower()}"
+run_name = f"enf_cons_{str(enf_cons).lower()}"
 
 # ................................ Training .............................................
 
@@ -79,7 +79,7 @@ trainer = Trainer(
             precision=32 if args.precision == "single" else 64
         )
 
-lit_model = LitUNet(lr=lr, alpha=alpha, enf_mass=enf_mass, use_attn=True, dtype=torch_dtype)
+lit_model = LitUNet(lr=lr, alpha=alpha, enf_cons=enf_cons, use_attn=True, dtype=torch_dtype)
 trainer.fit(lit_model, train_loader, val_loader)
 
-print(f"\n[train.py] enf_mass={enf_mass} -> checkpoint dir: {checkpoint_callback.dirpath}\n")
+print(f"\n[train.py] enf_cons={enf_cons} -> checkpoint dir: {checkpoint_callback.dirpath}\n")
