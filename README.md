@@ -1,12 +1,12 @@
-# ch_unet
+# CH-UNET
 
-A U-Net surrogate model for the Cahn-Hilliard (phase-ordering) PDE. The network learns to roll forward one time step of the phase-separation dynamics.
+This repository contains code accompanying the paper [Physics-guided Convolutional Neural Network for Domain Growth Prediction in Systems with Conserved Kinetics](https://doi.org/10.48550/arXiv.2606.26128).
 
 ## Contents
 
 - `phase_ordering.py` – numerical solver (`PhaseOrdering`) for the Cahn-Hilliard equation and dataset generation.
 - `models.py` – U-Net architecture (periodic convolutions + attention) and PyTorch Lightning training module (`LitUNet`).
-- `losses.py` – physics-informed loss combining MSE with an order-parameter conservation penalty.
+- `losses.py` – conseravtion loss combining MSE with an order-parameter conservation penalty.
 - `utilities.py` – dataset loading, conservation enforcement, autoregressive rollout prediction, and length-scale analysis helpers.
 - `train.py` – trains a model.
 - `pred.py` – runs autoregressive rollouts with a trained checkpoint and saves results.
