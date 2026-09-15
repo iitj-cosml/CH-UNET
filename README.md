@@ -1,6 +1,6 @@
 # CH-UNET
 
-This repository contains code accompanying the paper [Physics-guided Convolutional Neural Network for Domain Growth Prediction in Systems with Conserved Kinetics](https://doi.org/10.48550/arXiv.2606.26128).
+This repository contains code accompanying the paper [Physics-Constrained Neural Surrogate for Domain Growth Prediction in Systems with Conserved Kinetics](https://doi.org/10.48550/arXiv.2606.26128).
 
 ## Contents
 
